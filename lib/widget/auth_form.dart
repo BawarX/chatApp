@@ -3,7 +3,11 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({super.key});
+  AuthForm(this.submitFn);
+  final void Function(
+      String email, String password, String username, bool isLogin,BuildContext ctx) submitFn;
+
+  
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -17,13 +21,18 @@ class _AuthFormState extends State<AuthForm> {
   String _userPassword = '';
 
   void _trySubmtit() {
-    final isValid = _formKey.currentState!.validate(); // this wil trigger all the validatos in the form
+    final isValid = _formKey.currentState!
+        .validate(); // this wil trigger all the validatos in the form
     FocusScope.of(context).unfocus();
     if (isValid) {
       _formKey.currentState!.save();
-      print(_userName);
-      print(_userEmail);
-      print(_userPassword);
+      widget.submitFn(
+        _userEmail.trim(),
+        _userPassword.trim(),
+        _userName.trim(),
+        _isLogin,
+        context
+      );
       /*
     line 18 will go to the all the text form filds and is will
     trigger onSaved function
@@ -56,26 +65,25 @@ class _AuthFormState extends State<AuthForm> {
                       },
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        
                         labelText: 'Email address',
                       ),
                       onSaved: (value) {
                         _userEmail = value!; // we know its valid
                       },
                     ),
-                    if(!_isLogin)
-                    TextFormField(
-                       key: ValueKey('username'),
-                      validator: (value) {
-                        if (value!.isEmpty || value.length < 4) {
-                          return "please enter at least 4 characters";
-                        }
-                      },
-                      decoration: InputDecoration(labelText: 'Username'),
-                      onSaved: (value) {
-                        _userName = value!;
-                      },
-                    ),
+                    if (!_isLogin)
+                      TextFormField(
+                        key: ValueKey('username'),
+                        validator: (value) {
+                          if (value!.isEmpty || value.length < 4) {
+                            return "please enter at least 4 characters";
+                          }
+                        },
+                        decoration: InputDecoration(labelText: 'Username'),
+                        onSaved: (value) {
+                          _userName = value!;
+                        },
+                      ),
                     TextFormField(
                       key: ValueKey('password'),
                       validator: (value) {
@@ -87,7 +95,7 @@ class _AuthFormState extends State<AuthForm> {
                       },
                       obscureText: true,
                       decoration: InputDecoration(labelText: 'password'),
-                      onSaved: (value){
+                      onSaved: (value) {
                         _userPassword = value!;
                       },
                     ),
@@ -105,11 +113,12 @@ class _AuthFormState extends State<AuthForm> {
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
-                              _isLogin = !_isLogin;
+                            _isLogin = !_isLogin;
                           });
-                        
                         },
-                         child: Text(_isLogin ? "create a new account" : 'I already have an account'))
+                        child: Text(_isLogin
+                            ? "create a new account"
+                            : 'I already have an account'))
                   ],
                 )),
           ),
