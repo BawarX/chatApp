@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class chatScreen extends StatelessWidget {
@@ -7,9 +8,19 @@ class chatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter Chat'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+              icon: Icon(Icons.logout))
+        ],
+      ),
       body: StreamBuilder(
         builder: (ctx, streamSnapshot) {
-          if(ConnectionState.waiting == streamSnapshot.connectionState){
+          if (ConnectionState.waiting == streamSnapshot.connectionState) {
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -29,10 +40,9 @@ class chatScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          FirebaseFirestore.instance.collection('chats/zkvGWT6e7Oz3GQcS84my/messages')
-          .add(
-            {'text' : 'This was added by clicking the button!'}
-          );
+          FirebaseFirestore.instance
+              .collection('chats/zkvGWT6e7Oz3GQcS84my/messages')
+              .add({'text': 'This was added by clicking the button!'});
         },
       ),
     );
